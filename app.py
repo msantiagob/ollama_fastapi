@@ -58,10 +58,12 @@ async def generate_text(prompt: str):
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Error communicating with Ollama: {str(e)}")
 
-# Manejo de rutas no encontradas
-@app.get("/{full_path:path}")
-async def redirect_to_home(full_path: str):
-    return RedirectResponse(url="/api8000/")
+# Manejador para errores 404
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc):
+    if exc.status_code == 404:
+        return RedirectResponse(url="/api8000/")
+    return await request.app.default_http_exception_handler(request, exc)
 
 if __name__ == "__main__":
     import uvicorn
