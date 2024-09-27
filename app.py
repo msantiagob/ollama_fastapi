@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.responses import RedirectResponse
 import requests
 import json
@@ -6,11 +6,14 @@ import time
 
 app = FastAPI()
 
-@app.get("/api8000/")
+# Crear un router
+api_router = APIRouter(prefix="/api8000")
+
+@api_router.get("/")
 def read_root():
     return {"message": "Bienvenido a la API ollama"}
 
-@app.post("/api8000/generate")
+@api_router.post("/generate")
 async def generate_text(prompt: str):
     url = "http://localhost:11434/api/generate"
     payload = {
@@ -62,8 +65,11 @@ async def generate_text(prompt: str):
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     if exc.status_code == 404:
-        return RedirectResponse(url="/api8000/")
+        return RedirectResponse(url="/api8000/docs")
     return await request.app.default_http_exception_handler(request, exc)
+
+# Incluir el router en la aplicación
+app.include_router(api_router)
 
 if __name__ == "__main__":
     import uvicorn
