@@ -5,11 +5,11 @@ import time
 
 app = FastAPI()
 
-@app.get("/")
+@app.get("/api8000/")
 def read_root():
     return {"message": "Bienvenido a la API ollama"}
 
-@app.post("/generate")
+@app.post("/api8000/generate")
 async def generate_text(prompt: str):
     url = "http://localhost:11434/api/generate"
     payload = {
