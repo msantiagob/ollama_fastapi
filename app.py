@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 import requests
 import json
 import time
@@ -56,6 +57,11 @@ async def generate_text(prompt: str):
         return response.json()
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Error communicating with Ollama: {str(e)}")
+
+# Manejo de rutas no encontradas
+@app.get("/{full_path:path}")
+async def redirect_to_home(full_path: str):
+    return RedirectResponse(url="/api8000/")
 
 if __name__ == "__main__":
     import uvicorn
